@@ -1,0 +1,22 @@
+You can add the following code in plugin.py to add custom FanStatic resources
+
+1. Add "plugins.implements(plugins.IResource)"" to the class definition
+
+2. Add and edit the following code to the plugin implementation
+    def add_libraries(self,config):
+        #We add here our new library using the fanstatic directory of the plugin
+        libraries = []
+        libraries.append(u.addLibrary('mylibrary','fanstatic'))
+        return libraries
+
+    def add_JSResources(self, config, loadedJSResources):
+        #You can print loadedJSResources to see JS Resources already loaded
+        myJS = []
+        myJS.append(u.addJSResource('mylibrary','myJSResource','relative/path/to/my/resource.js','bootstrap'))
+        return myJS
+
+    def add_CSSResources(self, config, loadedCSSResources):
+         #You can print loadedCSSResources to see CSS Resources already loaded
+        myCSS = []
+        myCSS.append(u.addCSSResource('mylibrary', 'myCSSResource', 'relative/path/to/my/resource.css', 'bootstrapcss'))
+        return myCSS
