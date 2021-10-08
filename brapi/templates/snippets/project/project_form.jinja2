@@ -1,0 +1,16 @@
+{% extend_me %}
+
+{% block project_section_extra %}
+    <div class="col-md-6">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>{{ _("5. BreedBase integration") }}</h5>
+            </div>
+            <div class="ibox-content">
+                <div class="form-group" style="margin: 5px">
+                    <div class="i-checks" ><label style="font-weight: initial; font-size: 14px"> <input class="radiosRA" type="radio" name="link_breedbase" value="0" {% if dataworking.link_breedbase != 0 %} disabled {% endif %} {% if dataworking["link_breedbase"] ==0 %}checked{% endif %}> <i></i> {{ _("Link this project to a BreedBase server") }} </label></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock project_section_extra %}

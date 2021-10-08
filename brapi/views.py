@@ -1,9 +1,6 @@
-from climmob.plugins.utilities import climmobPublicView,climmobPrivateView
+from climmob.plugins.utilities import climmobPublicView
 
-class myPublicView(climmobPublicView):
+
+class BRAPIServersView(climmobPublicView):
     def processView(self):
         return {}
-
-class myPrivateView(climmobPrivateView):
-    def processView(self):
-        return {'activeUser': self.user}
