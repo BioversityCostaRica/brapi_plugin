@@ -2,16 +2,13 @@
 
 {% block project_heading_info %}
     <td width="95%">
-        <h2 ><strong>{{ activeProject.project_name }}</strong></h2>
+        <div class="row">
+            <div class="col-md-12">
+                <h2 style="float: left"><strong>{{ activeProject.project_name }}</strong></h2><spam>{% if request.h.check_integration("user", "project") == True %} <img style="margin-left: 10px; margin-top: 5px" title="{{ _('This project can be integrated with BreedBase') }}" src="{{ request.url_for_static('BreedBase_pass.png', 'brapi') }}">{% else %}<img title="{{ _('This project has technologies that are not compatible with BreedBase. Integration is not possible') }}" src="{{ request.url_for_static('BreedBase_fails.png', 'brapri') }}">{% endif %}</spam>
+            </div>
+        </div>
     </td>
     <td rowspan="2" class="text-center">
         <a href="https://climmob.net/blog/wiki/main-menu/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('landing/info.png') }}" alt="info"/> </a>
-    </td>
-    <td rowspan="2" class="text-center">
-    {% if request.h.check_integration("user", "project") == True %}
-        <img title="{{ _('This project can be integrated with BreedBase') }}" src="{{ request.url_for_static('BreedBase_pass.png', 'brapri') }}">
-    {% else %}
-        <img title="{{ _('This project has technologies that are not compatible with BreedBase. Integration is not possible') }}" src="{{ request.url_for_static('BreedBase_fails.png', 'brapri') }}">
-    {% endif %}
     </td>
 {% endblock project_heading_info %}

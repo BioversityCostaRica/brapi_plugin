@@ -7,9 +7,35 @@
                 <h5>{{ _("5. BreedBase integration") }}</h5>
             </div>
             <div class="ibox-content">
-                <div class="form-group" style="margin: 5px">
-                    <div class="i-checks" ><label style="font-weight: initial; font-size: 14px"> <input class="radiosRA" type="radio" name="link_breedbase" value="0" {% if dataworking.link_breedbase != 0 %} disabled {% endif %} {% if dataworking["link_breedbase"] ==0 %}checked{% endif %}> <i></i> {{ _("Link this project to a BreedBase server") }} </label></div>
+                <div class="form-group">
+                    <label class="col-sm-2 col-form-label">{{ _('Link with a BreedBase server') }}</label>
+                    <div class="col-sm-10"><input type="checkbox" name="breedbase_link" class="js-switch" {% if dataworking.breedbase_link == '1' %}checked{% endif %} /><span class="form-text m-b-none">{% block case_comment %}{{ _('If checked ClimMob will store the results of a project in a BreedBase server') }} {% endblock case_comment %}</span></div>
                 </div>
+
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">{{ _("Main crop") }}</label>
+                    <div class="col-sm-8">
+                        <select id="breedbase_crop" name="breedbase_crop" class="form-control chosen-select" tabindex="2" required oninvalid="this.setCustomValidity('{{ _("Select one crop.") }}')" onchange="this.setCustomValidity('')">
+                            <option value="">{{ _("Select one crop") }}</option>
+                            {% for crop in request.h.get_crops() %}
+                                <option value="{{ crop.code }}" {% if crop.code == dataworking.breedbase_crop %}selected{% endif %} >{{ crop.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">{{ _("BreedBase server") }}</label>
+                    <div class="col-sm-8">
+                        <select id="breedbase_server" name="breedbase_server" class="form-control chosen-select" tabindex="2" required oninvalid="this.setCustomValidity('{{ _("Select one server.") }}')" onchange="this.setCustomValidity('')">
+                            <option value="">{{ _("Select one server") }}</option>
+                            {% for server in request.h.get_servers() %}
+                                <option data-url="{{ server.url }}" value="{{ server.code }}" {% if server.code == dataworking.breedbase_server %}selected{% endif %} >{{ server.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
