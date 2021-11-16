@@ -1,5 +1,6 @@
 import climmob.plugins as plugins
 import climmob.plugins.utilities as u
+from climmob.models import Project, mapFromSchema
 from .views import BRAPIServersView
 from .helpers import (
     check_integration,
@@ -8,6 +9,8 @@ from .helpers import (
     get_server_url,
     crop_exist,
 )
+from .brapi import send_study_data
+import json
 
 
 class BrAPI(plugins.SingletonPlugin):
@@ -16,6 +19,7 @@ class BrAPI(plugins.SingletonPlugin):
     plugins.implements(plugins.ISchema)
     plugins.implements(plugins.ITemplateHelpers)
     plugins.implements(plugins.IProject)
+    plugins.implements(plugins.IReport)
 
     def before_mapping(self, config):
         # We don't add any routes before the host application
@@ -24,7 +28,7 @@ class BrAPI(plugins.SingletonPlugin):
     def after_mapping(self, config):
         # We add here a new route /json that returns a JSON
         custom_map = [
-            u.addRoute("brapi_servers", "/brapi/servers", BRAPIServersView, "json")
+            u.addRoute("brapi_servers", "/breedbase/test", BRAPIServersView, "json")
         ]
         return custom_map
 
@@ -56,16 +60,59 @@ class BrAPI(plugins.SingletonPlugin):
                 return False, _("You need to specify a BreedBase crop"), project_data
             if project_data.get("breedbase_server", None) is None:
                 return False, _("You need to specify a BreedBase server"), project_data
-            print("*********************88")
-            print(project_data["breedbase_server"])
-            print("*********************88")
             server_url = get_server_url(project_data["breedbase_server"])
             if server_url is None:
-                return False, _("Server not found"), project_data
+                return False, _("BreedBase server not found"), project_data
             if not crop_exist(project_data["breedbase_crop"]):
-                return False, _("Crop not found"), project_data
+                return False, _("BreedBase Crop not found"), project_data
             project_data["breedbase_url"] = server_url
+        else:
+            project_data["breedbase_link"] = 0
+            project_data["breedbase_crop"] = ""
+            project_data["breedbase_server"] = ""
+            project_data["breedbase_url"] = ""
         return True, "", project_data
 
     def after_adding_project(self, request, user, project_data):
         pass
+
+    def before_modifying_project(self, request, user, project_data):
+        _ = request.translate
+        if "breedbase_link" in project_data.keys():
+            project_data["breedbase_link"] = 1
+            if project_data.get("breedbase_crop", None) is None:
+                return False, _("You need to specify a BreedBase crop"), project_data
+            if project_data.get("breedbase_server", None) is None:
+                return False, _("You need to specify a BreedBase server"), project_data
+            server_url = get_server_url(project_data["breedbase_server"])
+            if server_url is None:
+                return False, _("BreedBase server not found"), project_data
+            if not crop_exist(project_data["breedbase_crop"]):
+                return False, _("BreedBase Crop not found"), project_data
+            project_data["breedbase_url"] = server_url
+        else:
+            project_data["breedbase_link"] = 0
+            project_data["breedbase_crop"] = ""
+            project_data["breedbase_server"] = ""
+            project_data["breedbase_url"] = ""
+        return True, "", project_data
+
+    def after_modifying_project(self, request, user, project_data):
+        pass
+
+    # IReport
+    def on_generate(self, request, user, project, input_data):
+        project_data = (
+            request.dbsession.query(Project)
+            .filter(Project.project_cod == project)
+            .filter(Project.user_name == user)
+            .first()
+        )
+        project_data = mapFromSchema(project_data)
+
+        with open("/home/cquiros/input_data.json", "w") as outfile:
+            json.dump(input_data, outfile)
+
+        # if "breedbase_link" in project_data.keys():
+        #     if project_data["breedbase_link"] == 1:
+        #         send_study_data(user, project, input_data, project_data["breedbase_crop"], project_data["breedbase_url"])

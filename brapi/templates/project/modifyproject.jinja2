@@ -1,0 +1,17 @@
+{% extend_me %}
+
+{% block css %}
+    {{ super() }}
+    {% cssresource request,'coreresources','switchery' %}
+{% endblock css %}
+
+{% block topScripts %}
+    {{ super() }}
+    {% jsresource request,'coreresources','switchery' %}
+{% endblock topScripts %}
+
+{% block modify_project_script_extra %}
+    var elem = document.querySelector('.js-switch');
+    var switchery = new Switchery(elem, { color: '#1AB394' });
+{% endblock modify_project_script_extra %}
+
