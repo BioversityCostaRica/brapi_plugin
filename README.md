@@ -378,7 +378,7 @@ Example of a Variable:
 
 ### Observations
 
-In ClimMob one data row for a data collection moment will generate 3 observations in BreedBase. Each observation will have study ID followed by package code followed by data collection ID, followed by the variableID, followed by the observation ID. Each observation has the germplasm and a unique ranking value (Best, Worst, or Neutral)
+In ClimMob one data row for a data collection moment will generate 3 observations in BreedBase. Each observation will have study ID, followed by package code, followed by data collection ID, followed by the variableID and followed by the observation ID. Each observation has the germplasm and a unique ranking value (Best, Worst, or Neutral)
 
 Observation 1:
 
@@ -448,4 +448,4 @@ Observation 3:
 
 ## License
 
-This plug-in is licensed under AGPL-3
+This plug-in is licensed under GPL-v3
