@@ -35,6 +35,20 @@
                         </select>
                     </div>
                 </div>
+{{ dataworking.breedbase_license }}
+                <div class="form-group">
+                    <label class="col-sm-4 control-label">{{ _("BreedBase License") }}</label>
+                    <div class="col-sm-8">
+                        <select id="breedbase_license" name="breedbase_license" class="form-control chosen-select" tabindex="2">
+                            <option value="">{{ _("Select one license for your data") }}</option>
+                            <option value="CC-BY" {% if dataworking.breedbase_license == "CC-BY" %}selected{% endif %} >Attribution</option>
+                            <option value="CC-BY-SA" {% if dataworking.breedbase_license == "CC-BY-SA" %}selected{% endif %} >Attribution-ShareAlike</option>
+                            <option value="CC-BY-NC" {% if dataworking.breedbase_license == "CC-BY-NC" %}selected{% endif %} >Attribution-NonCommercial</option>
+                            <option value="CC-BY-NC-SA" {% if dataworking.breedbase_license == "CC-BY-NC-SA" %}selected{% endif %} >Attribution-NonCommercial-ShareAlike</option>
+                            <option value="OTHER-PUBLIC" {% if dataworking.breedbase_license == "Other" %}selected{% endif %} >Other public domain license</option>
+                        </select>
+                    </div>
+                </div>
 
             </div>
         </div>

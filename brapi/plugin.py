@@ -43,6 +43,7 @@ class BrAPI(plugins.SingletonPlugin):
             u.addFieldToProjectSchema("breedbase_crop", "Main crop of the breedBase"),
             u.addFieldToProjectSchema("breedbase_server", "BreedBase Server"),
             u.addFieldToProjectSchema("breedbase_url", "BreedBase Server URL"),
+            u.addFieldToProjectSchema("breedbase_license", "BreedBase License"),
         ]
 
     def get_helpers(self):
@@ -56,6 +57,8 @@ class BrAPI(plugins.SingletonPlugin):
         _ = request.translate
         if "breedbase_link" in project_data.keys():
             project_data["breedbase_link"] = 1
+            if project_data.get("breedbase_license", None) is None:
+                return False, _("You need to specify a BreedBase license"), project_data
             if project_data.get("breedbase_crop", None) is None:
                 return False, _("You need to specify a BreedBase crop"), project_data
             if project_data.get("breedbase_server", None) is None:
@@ -71,15 +74,19 @@ class BrAPI(plugins.SingletonPlugin):
             project_data["breedbase_crop"] = ""
             project_data["breedbase_server"] = ""
             project_data["breedbase_url"] = ""
+            project_data["breedbase_license"] = ""
         return True, "", project_data
 
     def after_adding_project(self, request, user, project_data):
         pass
 
     def before_modifying_project(self, request, user, project_data):
+        print(project_data)
         _ = request.translate
         if "breedbase_link" in project_data.keys():
             project_data["breedbase_link"] = 1
+            if project_data.get("breedbase_license", '') == '':
+                return False, _("You need to specify a License"), project_data
             if project_data.get("breedbase_crop", None) is None:
                 return False, _("You need to specify a BreedBase crop"), project_data
             if project_data.get("breedbase_server", None) is None:
@@ -95,6 +102,7 @@ class BrAPI(plugins.SingletonPlugin):
             project_data["breedbase_crop"] = ""
             project_data["breedbase_server"] = ""
             project_data["breedbase_url"] = ""
+            project_data["breedbase_license"] = ""
         return True, "", project_data
 
     def after_modifying_project(self, request, user, project_data):

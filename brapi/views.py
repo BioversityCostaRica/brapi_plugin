@@ -24,7 +24,7 @@ class BRAPIServersView(publicView):
             .first()
         )
         project_data = mapFromSchema(project_data)
-        with open("/home/cquiros/input_data2.json") as json_file:
+        with open("/home/cquiros/input_data.json") as json_file:
             input_data = json.load(json_file)
 
             send_study_data(

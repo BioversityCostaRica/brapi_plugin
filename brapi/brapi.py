@@ -136,18 +136,22 @@ def send_observations(project_data, server_url, current_data):
                 print("*****************Observation POST")
                 print(response.status_code)
                 print(response.text)
+                print(observation_data)
                 print("*****************Observation POST")
                 return
         else:
             response = requests.put(
-                "{}/observations/{}".format(server_url, observation_db_id),
+                "{}observations/{}".format(server_url, observation_db_id),
                 data=json.dumps(observation_data),
                 headers=headers,
             )
             if response.status_code != 200:
                 print("*****************Observation PUT")
+                print("{}observations/{}".format(server_url, observation_db_id))
                 print(response.status_code)
                 print(response.text)
+                print(observation_db_id)
+                print(observation_data)
                 print("*****************Observation PUT")
                 return
 
@@ -215,6 +219,7 @@ def send_trait_data(project_data, server_url, current_data):
                     print("*****************Trait POST")
                     print(response.status_code)
                     print(response.text)
+                    print(a_trait)
                     print("*****************Trait POST")
                     return
             else:
@@ -227,6 +232,7 @@ def send_trait_data(project_data, server_url, current_data):
                     print("*****************Trait PUT")
                     print(response.status_code)
                     print(response.text)
+                    print(a_trait)
                     print("*****************Trait PUT")
                     return
 
@@ -374,6 +380,7 @@ def send_trait_data(project_data, server_url, current_data):
                         print("*****************variables POST")
                         print(response.status_code)
                         print(response.text)
+                        print(variable_data)
                         print("*****************variables POST")
                         return
                 else:
@@ -387,6 +394,7 @@ def send_trait_data(project_data, server_url, current_data):
                         print("*****************variables PUT")
                         print(response.status_code)
                         print(response.text)
+                        print(variable_data)
                         print("*****************variables PUT")
                         return
             else:
@@ -410,6 +418,7 @@ def send_trait_data(project_data, server_url, current_data):
                     print("*****************variables POST")
                     print(response.status_code)
                     print(response.text)
+                    print(variable_data)
                     print("*****************variables POST")
                     return
 
@@ -452,7 +461,7 @@ def send_study_data(user, project, project_data, crop, server_url, current_data)
                 datetime.datetime.now().strftime("%Y_%m_%d %H:%M:%S")
             ),
         },
-        "license": "MIT License",
+        "license": "{}".format(project_data["project"]["breedbase_license"]),
         "locationName": "{}".format(project_data["project"]["project_cnty"]),
         "observationLevels": [
             {"levelName": "field", "levelOrder": 0},
