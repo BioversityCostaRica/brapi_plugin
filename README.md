@@ -44,7 +44,7 @@ $ python setup.py develop
 
 The plug-in will modify the user interface for creating and editing projects by adding a section for BreedBase integration:
 
-![](/home/cquiros/data/projects2017/climmob/software/py3ClimMob_plugins/brapi_plugin/project.png)
+![image](./project.png)
 
 You need to indicate the main crop of the project, a BreedBase server with BrAPI 2.0 and a license for your data.
 
