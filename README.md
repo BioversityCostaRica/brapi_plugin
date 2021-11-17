@@ -52,17 +52,17 @@ You need to indicate the main crop of the project, a BreedBase server with BrAPI
 
 The plug-in will check your project to see if it can integrate with BreedBase server. This is done by checking that you only use one technology and that such technology is a crop. Please note that we don't control if the technology that you select for your project matched the Main crop in the project integration. The plug-in will show in the ClimMob main window whether the integration is possible.
 
-![](/home/cquiros/data/projects2017/climmob/software/py3ClimMob_plugins/brapi_plugin/project_icon.png)
+![image](./project_icon.png)
 
 The following icons could appear:
 
-![](/home/cquiros/data/projects2017/climmob/software/py3ClimMob_plugins/brapi_plugin/brapi/static/BreedBase_no.png)BreedBase integration was not selected.
+![image](./brapi/static/BreedBase_no.png)BreedBase integration was not selected.
 
-![](/home/cquiros/data/projects2017/climmob/software/py3ClimMob_plugins/brapi_plugin/brapi/static/BreedBase_pending.png)BreedBase checks pending. This will appear when a project does not have technologies
+![image](./brapi/static/BreedBase_pending.png)BreedBase checks pending. This will appear when a project does not have technologies
 
-![](/home/cquiros/data/projects2017/climmob/software/py3ClimMob_plugins/brapi_plugin/brapi/static/BreedBase_fails.png)BreedBase integration not possible. This happens when the project has technologies that are not crop or it has two technologies
+![image](./brapi/static/BreedBase_fails.png)BreedBase integration not possible. This happens when the project has technologies that are not crop or it has two technologies
 
-![](/home/cquiros/data/projects2017/climmob/software/py3ClimMob_plugins/brapi_plugin/brapi/static/BreedBase_pass.png)BreedBase integration is OK. 
+![image](./brapi/static/BreedBase_pass.png)BreedBase integration is OK. 
 
 ### Sending data to BreedBase
 
