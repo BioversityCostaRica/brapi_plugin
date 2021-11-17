@@ -50,7 +50,7 @@ You need to indicate the main crop of the project, a BreedBase server with BrAPI
 
 ### Checks on your project
 
-The plug-in will check your project to see if it can integrate with BreedBase server. This is done by checking that you only use one technology and that such technology is a crop. Please note that we don't control if the technology that you select for your project matched the Main crop in the project integration. The plug-in will show in the ClimMob main window whether the integration is possible.
+The plug-in will check your project to see if it can integrate with a BreedBase server. This is done by checking whether the project only use one technology and that such technology is a crop. Please note that the plugin does not control if the technology that you select for your project matches the Main crop in the project integration. The plug-in will show in ClimMob's Main Window whether the integration is possible.
 
 ![image](./project_icon.png)
 
@@ -58,15 +58,15 @@ The following icons could appear:
 
 ![image](./brapi/static/BreedBase_no.png)BreedBase integration was not selected.
 
-![image](./brapi/static/BreedBase_pending.png)BreedBase checks pending. This will appear when a project does not have technologies
+![image](./brapi/static/BreedBase_pending.png)BreedBase checks pending. This will appear when a project does not have technologies.
 
-![image](./brapi/static/BreedBase_fails.png)BreedBase integration not possible. This happens when the project has technologies that are not crop or it has two technologies
+![image](./brapi/static/BreedBase_fails.png)BreedBase integration is not possible. This happens when the project has technologies that are not crop or it has two or more technologies.
 
 ![image](./brapi/static/BreedBase_pass.png)BreedBase integration is OK. 
 
 ### Sending data to BreedBase
 
-ClimMob will send data to BreedBase automatically when a report has been generated. If the data in ClimMob has been cleaned, and a new report is generated then the plug-in will update the BreedBase information.
+ClimMob will send data to the selected BreedBase server automatically when a report has been generated. If the data in ClimMob has been cleaned, and a new report is generated, then the plug-in will update the BreedBase information.
 
 ## Information stored in BreedBase
 
@@ -159,7 +159,7 @@ Project information is stored as an Study in BreedBase. The complete information
 
 ### Traits, Methods, Scales and Variables
 
-A trait in BreedBase is matched with a question type=”Ranking of options”. The trait will have type = Tricot. For each Trait there is one Method = Tricot and one Scale = Ranking. A variable is defines a one trait, with one method with one scale, therefore there are as many variables as traits.
+A trait in BreedBase is matched with a question type=”Ranking of options”. The trait will have type = Tricot. For each Trait there is one Method = Tricot and one Scale = Ranking. A variable is defines a one trait, with one method with one scale, therefore there are as many variables as traits. The complete information of a ClimMob Characteristic is stored in the trait and variable object in BreedBase ad additional information.
 
 An example of a Trait
 
@@ -378,7 +378,7 @@ Example of a Variable:
 
 ### Observations
 
-In ClimMob one data row for a data collection moment will generate 3 observations in BreedBase. Each observation will have study ID, followed by package code, followed by data collection ID, followed by the variableID and followed by the observation ID. Each observation has the germplasm and a unique ranking value (Best, Worst, or Neutral)
+One data row for a data collection moment in ClimMob will generate 3 observations in BreedBase. Each observation will have study ID, followed by package code, followed by data collection ID, followed by the variableID and followed by the observation ID. Each observation has the germplasm and a unique ranking value (Best, Worst, or Neutral). The observation timeStamp is taken from the submission of the data to ClimMob.
 
 Observation 1:
 
