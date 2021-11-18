@@ -1,7 +1,7 @@
 BreedBase ClimMob plug-in
 ==============
 
-This plug-in allows to store ClimMob projects as studies in BreedBase servers that uses BrAPI 2.0.
+This plug-in allows to store [ClimMob](https://github.com/BioversityCostaRica/py3ClimMob) projects as studies in [BreedBase](https://breedbase.org/) servers that use [BrAPI](https://brapi.org/) 2.0.
 
 
 
