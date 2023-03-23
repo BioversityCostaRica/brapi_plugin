@@ -1,5 +1,5 @@
 from climmob.views.classes import publicView, privateView
-from .brapi import send_study_data, send_trait_data, send_observations
+from .brapi import send_study_data, send_trait_data, send_observations, send_trial_data
 from climmob.models import Project, mapFromSchema
 import json
 import os
@@ -31,39 +31,39 @@ class BRAPIOICallBack(privateView):
         return {}
 
 
-class BRAPISynch(publicView):
+class BRAPISynch(privateView):
     def processView(self):
+        user = self.user.login
+        project_id = self.request.matchdict["project"]
+
+        repository_path = self.request.registry.settings.get("user.repository")
+        brapi_path = os.path.join(repository_path, *["brapi"])
+        if not os.path.exists(brapi_path):
+            os.makedirs(brapi_path)
+        brapi_file = os.path.join(repository_path, *["brapi", project_id + ".json"])
+
+        project_data = (
+            self.request.dbsession.query(Project)
+            .filter(Project.project_id == project_id)
+            .first()
+        )
+        project_data = mapFromSchema(project_data)
+
+        current_data = {}
+        if os.path.exists(brapi_file):
+            with open(brapi_file) as json_file:
+                current_data = json.load(json_file)
+
+        send_trial_data(
+            self.request,
+            user,
+            project_data,
+            project_data["breedbase_crop"],
+            project_data["breedbase_url"],
+            current_data,
+        )
+
+        with open(brapi_file, "w") as outfile:
+            json.dump(current_data, outfile)
+        self.returnRawViewResult = True
         return {}
-        # user = "cquiros"
-        # project = "brapi2"
-        #
-        # repository_path = self.request.registry.settings.get("user.repository")
-        # brapi_file = os.path.join(repository_path, *[user, project, "brapi.json"])
-        # current_data = {}
-        # if os.path.exists(brapi_file):
-        #     with open(brapi_file) as json_file:
-        #         current_data = json.load(json_file)
-        #
-        # project_data = (
-        #     self.request.dbsession.query(Project)
-        #     .filter(Project.project_cod == project)
-        #     .filter(Project.user_name == user)
-        #     .first()
-        # )
-        # project_data = mapFromSchema(project_data)
-        # with open("/home/cquiros/input_data.json") as json_file:
-        #     input_data = json.load(json_file)
-        #
-        #     send_study_data(
-        #         user,
-        #         project,
-        #         input_data,
-        #         project_data["breedbase_crop"],
-        #         project_data["breedbase_url"],
-        #         current_data,
-        #     )
-        #     send_trait_data(input_data, project_data["breedbase_url"], current_data)
-        #     send_observations(input_data, project_data["breedbase_url"], current_data)
-        #     with open(brapi_file, "w") as outfile:
-        #         json.dump(current_data, outfile)
-        # return {}

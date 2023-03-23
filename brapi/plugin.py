@@ -103,7 +103,7 @@ class BrAPI(plugins.SingletonPlugin):
     def after_adding_project(self, request, user, project_data):
         pass
 
-    def before_modifying_project(self, request, user, project_data):
+    def before_updating_project(self, request, user_name, project_id, project_data):
         print(project_data)
         _ = request.translate
         if "breedbase_link" in project_data.keys():
@@ -136,8 +136,11 @@ class BrAPI(plugins.SingletonPlugin):
             "",
         )
 
-    def after_modifying_project(self, request, user, project_data):
+    def after_updating_project(self, request, user_name, project_id, project_data):
         pass
+
+    def before_returning_project_context(self, request, context):
+        return context
 
     # # IReport
     # def on_generate(self, request, user, project, input_data):

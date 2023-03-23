@@ -2,7 +2,7 @@ from oic.oic import Client
 from oic.utils.authn.client import ClientSecretBasic
 from oic import rndstr
 from climmob.models import User
-from climmob.models.schema import mapToSchema
+from climmob.models.schema import mapToSchema, mapFromSchema
 
 
 def get_login_url(request):
@@ -38,3 +38,12 @@ def update_user_token(request, user_name, data):
     request.dbsession.query(User).filter(User.user_name == user_name).update(
         mapped_data
     )
+
+
+def get_token(request, user_name):
+    res = request.dbsession.query(User).filter(User.user_name == user_name).first()
+    try:
+        token = mapFromSchema(res)["breedbase_token"]
+    except KeyError:
+        token = None
+    return token

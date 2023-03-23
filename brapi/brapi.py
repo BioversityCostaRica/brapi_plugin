@@ -2,6 +2,7 @@ from .helpers import get_crop_desc
 import json
 import datetime
 import requests
+from .oi_client import get_token
 
 
 def find_breed_base_variable(current_data, variable_code):
@@ -504,3 +505,65 @@ def send_study_data(user, project, project_data, crop, server_url, current_data)
             print(response.status_code)
             print(response.text)
             print("*******************Study PUT")
+
+
+def send_trial_data(request, user, project_data, crop, server_url, current_data):
+    crop_desc = get_crop_desc(crop)
+    start_date = project_data["project_creationdate"].strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    trial_dict = {
+        "active": True,
+        "commonCropName": crop_desc,
+        "contacts": [
+            {
+                "email": project_data["project_piemail"],
+                "name": project_data["project_pi"],
+                "type": "PI",
+            }
+        ],
+        "startDate": start_date,
+        "trialDescription": project_data["project_abstract"],
+        "trialName": project_data["project_name"],
+        "trialPUI": "https://climmob.net",
+    }
+
+    print(json.dumps([trial_dict], default=str))
+
+    # for key, value in project_data.items():
+    #     trial_dict["additionalInfo"][key] = value
+
+    auth_token = get_token(request, user)
+
+    headers = {
+        "Content-Type": "application/json",
+        "accept": "application/json",
+        "Authorization": "Bearer " + auth_token,
+    }
+    if not current_data:
+        print("POST")
+        response = requests.post(
+            "{}/brapi/v2/trials".format(server_url),
+            data=json.dumps([trial_dict], default=str),
+            headers=headers,
+        )
+        if response.status_code == 200:
+            data = json.loads(response.text)
+            current_data["trialDbId"] = data["result"]["data"][0]["trialDbId"]
+        else:
+            print("*******************Trial POST result")
+            print(response.status_code)
+            print(response.text)
+            print("*******************Trial POST result")
+    else:
+        print("PUT")
+        response = requests.put(
+            "{}/brapi/v2/trials/{}".format(server_url, current_data["trialDbId"]),
+            data=json.dumps(trial_dict, default=str),
+            headers=headers,
+        )
+        if response.status_code != 200:
+            print("*******************Trial PUT")
+            print(trial_dict)
+            print(response.status_code)
+            print(response.text)
+            print("*******************Trial PUT")

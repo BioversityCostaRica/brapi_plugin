@@ -51,17 +51,17 @@ breed_base_servers = [
     {
         "code": "test",
         "name": "Test server",
-        "url": "https://test-server.brapi.org/brapi/v2/",
+        "url": "https://test-server.brapi.org",
     },
     {
         "code": "cassavabase",
         "name": "NextGen Cassava Project",
-        "url": "https://cassavabase.org/brapi/v2/",
+        "url": "https://cassavabase.org",
     },
     {
         "code": "yambase",
         "name": "Africa Yam Project",
-        "url": "https://yambase.org/brapi/v2/",
+        "url": "https://yambase.org",
     },
 ]
 
