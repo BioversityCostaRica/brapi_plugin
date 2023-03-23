@@ -1,7 +1,7 @@
 import climmob.plugins as plugins
 import climmob.plugins.utilities as u
 from climmob.models import Project, mapFromSchema
-from .views import BRAPIServersView, BRAPIOILogin, BRAPIOICallBack
+from .views import BRAPISynch, BRAPIOILogin, BRAPIOICallBack
 from .helpers import (
     check_integration,
     get_servers,
@@ -29,7 +29,9 @@ class BrAPI(plugins.SingletonPlugin):
     def after_mapping(self, config):
         # We add here a new route /json that returns a JSON
         custom_map = [
-            u.addRoute("brapi_servers", "/breedbase/test", BRAPIServersView, "json"),
+            u.addRoute(
+                "brapi_synchronize", "/breedbase/synch/{project}", BRAPISynch, "json"
+            ),
             u.addRoute("brapi_oi_login", "/breedbase/login", BRAPIOILogin, None),
             u.addRoute(
                 "brapi_oi_callback",
