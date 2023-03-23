@@ -1,10 +1,15 @@
 {% extend_me %}
 
 {% block project_heading_info %}
-    {% set breedBase = request.h.check_integration(request, activeUser.login, activeProject.project_cod) %}
+    {% set breedBase = request.h.check_integration(request, activeProject.project_id) %}
     {% if breedBase == 1 %}
-        {%  set breedBaseImage = request.url_for_static('BreedBase_pass.png', 'brapi') %}
-        {%  set breedBaseMessage = _('This project can be integrated with BreedBase.') %}
+        {% if request.h.token_is_valid(activeUser.userData.breedbase_token_expires_on) == True %}
+            {%  set breedBaseImage = request.url_for_static('BreedBase_pass.png', 'brapi') %}
+            {%  set breedBaseMessage = _('This project can store data in BreedBase.') %}
+        {% else %}
+            {%  set breedBaseMessage = _('This project can store data in BreedBase but you need to login') %}
+            {%  set breedBaseImage = request.url_for_static('BreedBase_loggin.png', 'brapi') %}
+        {% endif %}
     {% endif %}
     {% if breedBase == 0 %}
         {%  set breedBaseImage = request.url_for_static('BreedBase_pass.png', 'brapi') %}
@@ -21,7 +26,16 @@
     <td width="95%">
         <div class="row">
             <div class="col-md-12">
-                <h2 style="float: left"><strong>{{ activeProject.project_name }}</strong></h2><spam><img style="margin-left: 10px; margin-top: 5px" title="{{ breedBaseMessage }}" src="{{ breedBaseImage }}"></spam>
+                <h2 style="float: left"><strong>{{ activeProject.project_name }}</strong></h2><spam><img id="BreedBaseImage" style="margin-left: 10px; margin-top: 5px" title="{{ breedBaseMessage }}" src="{{ breedBaseImage }}"></spam>
+                {% if breedBase == 1 %}
+                    {% if activeProject.breedbase_login == 1 %}
+                        {% if request.h.token_is_valid(activeUser.userData.breedbase_token_expires_on) == False %}
+                            <button hidden="hidden" type="button" class="btn btn-primary" id="#BreedBaseLogin">
+                                {{ _('Login into BreedBase') }}
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
             </div>
         </div>
     </td>
@@ -29,3 +43,18 @@
         <a href="https://climmob.net/blog/wiki/main-menu/" target="_blank"><img style="width: 25px; height: 25px " src="{{ request.url_for_static('landing/info.png') }}" alt="info"/> </a>
     </td>
 {% endblock project_heading_info %}
+
+{% block script %}
+    {{ super() }}
+    {% if breedBase == 1 %}
+        {% if activeProject.breedbase_login == 1 %}
+            {% if request.h.token_is_valid(activeUser.userData.breedbase_token_expires_on) == False %}
+                <script>
+                    $( "#BreedBaseLogin" ).click(function() {
+                        location.href="{{ request.route_url("brapi_oi_login") }}";
+                    });
+                </script>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock script %}

@@ -1,12 +1,25 @@
 from climmob.models import Project, mapFromSchema, Prjtech, Technology
 from sqlalchemy import func
+import datetime
 
 
-def check_integration(request, user, project):
+def token_is_valid(expire_datetime):
+    try:
+        datetime_object = datetime.datetime.strptime(
+            expire_datetime, "%Y-%m-%d %H:%M:%S"
+        )
+        if datetime_object >= datetime.datetime.now():
+            return True
+        else:
+            return False
+    except:
+        return False
+
+
+def check_integration(request, project_id):
     project_data = (
         request.dbsession.query(Project)
-        .filter(Project.project_cod == project)
-        .filter(Project.user_name == user)
+        .filter(Project.project_id == project_id)
         .first()
     )
     project_data = mapFromSchema(project_data)
@@ -14,17 +27,15 @@ def check_integration(request, user, project):
         if project_data["breedbase_link"] == 1:
             if (
                 request.dbsession.query(func.count(Prjtech.tech_id))
-                .filter(Prjtech.project_cod == project)
-                .filter(Prjtech.user_name == user)
+                .filter(Prjtech.project_id == project_id)
                 .scalar()
                 > 0
             ):
                 techs = (
                     request.dbsession.query(func.count(Technology.tech_id))
                     .filter(Technology.tech_id == Prjtech.tech_id)
-                    .filter(Prjtech.user_name == user)
-                    .filter(Prjtech.project_cod == project)
-                    .filter(Technology.tech_crop == 0)
+                    .filter(Prjtech.project_id == project_id)
+                    .filter(Technology.croptaxonomy_code == 0)
                     .scalar()
                 )
                 if techs == 0:

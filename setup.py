@@ -36,7 +36,9 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    extras_require={"testing": tests_require,},
+    extras_require={
+        "testing": tests_require,
+    },
     install_requires=requires,
     entry_points={"climmob.plugins": ["brapi = brapi.plugin:BrAPI"]},
 )
