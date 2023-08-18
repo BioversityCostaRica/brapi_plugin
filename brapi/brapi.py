@@ -13,6 +13,22 @@ def find_breed_base_variable(current_data, variable_code):
     return None
 
 
+class TokenExpired(Exception):
+    """
+    Exception raised when the server returns a 403
+    """
+
+
+def report_error(response):
+    if response.status_code == 401:
+        raise TokenExpired("The token has expired")
+    else:
+        print("*******************Trial POST result")
+        print(response.status_code)
+        print(response.text)
+        print("*******************Trial POST result")
+
+
 def send_observations(project_data, server_url, current_data):
     headers = {"Content-Type": "application/json", "accept": "application/json"}
     assessments = []
@@ -424,87 +440,91 @@ def send_trait_data(project_data, server_url, current_data):
                     return
 
 
-def send_study_data(user, project, project_data, crop, server_url, current_data):
+def send_studies(request, user, project_data, crop, server_url, current_data):
+    if project_data["project.project_regstatus"] != 2:
+        return
     crop_desc = get_crop_desc(crop)
-    start_date = project_data["project"]["project_creationdate"]
-    start_date = start_date.replace(" ", "T") + "Z"
-    with open("/home/cquiros/output.json", "w") as twitterDataFile:
-        json.dump(project_data, twitterDataFile, indent=4)
+    start_date = project_data["project_creationdate"].strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    studies = []
+
+
+    # We need to go through each registration using this dict and add each in studies array
+    # Change studyCode for the package ID
+    # See https://github.com/plantbreeding/BrAPI/tree/brapi-V2.1/Specification/BrAPI-Core/Studies#post---studies-post-brapiv2studies
+    # additionalInfo [{"var": "qst111", "label": "Gender", "value": "1"}]
     study_dict = {
-        "active": "true",
+        "active": True,
         "commonCropName": crop_desc,
-        "additionalInfo": {},
         "contacts": [
             {
-                "email": "{}".format(project_data["project"]["project_piemail"]),
-                "instituteName": "CLIMMOB",
-                "name": "{}".format(project_data["project"]["project_pi"]),
+                "email": project_data["project_piemail"],
+                "name": project_data["project_pi"],
                 "type": "PI",
             }
         ],
+        "experimentalDesign": {
+            "PUI": "CO_715:0000145",
+            "description": "TRICOT",
+        },
         "externalReferences": [
             {
-                "project_id": "CLIMMOB_{}_{}".format(user, project),
-                "referenceSource": "CLIMMOB",
+                "referenceId": "https://climmob.net/blog/wiki/about-tricot/",
+                "referenceSource": "URL",
             },
         ],
-        "documentationURL": "https://climmob.net",
-        "endDate": "2021-11-09T14:29:23.075Z",
-        "experimentalDesign": {
-            "PUI": "TRICOT",
-            "description": "The experiment has a TRICOT design",
-        },
-        "lastUpdate": {
-            "timestamp": "{}".format(
-                datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
-            ),
-            "version": "{}".format(
-                datetime.datetime.now().strftime("%Y_%m_%d %H:%M:%S")
-            ),
-        },
-        "license": "{}".format(project_data["project"]["breedbase_license"]),
-        "locationName": "{}".format(project_data["project"]["project_cnty"]),
+        "license": project_data["breedbase_license"],
         "observationLevels": [
-            {"levelName": "field", "levelOrder": 0},
-            {"levelName": "block", "levelOrder": 1},
-            {"levelName": "plot", "levelOrder": 2},
+            {"levelName": "block", "levelOrder": 0},
+            {"levelName": "column", "levelOrder": 1},
         ],
-        "startDate": "{}".format(start_date),
-        "studyCode": "CLIMMOB_{}_{}".format(user, project),
-        "studyDescription": "{}".format(project_data["project"]["project_abstract"]),
-        "studyName": "{}".format(project_data["project"]["project_name"]),
+        "observationUnitsDescription": "Ranking of varieties",
+        "startDate": "Registry_datetime",
+        "studyCode": "package number | rowuuid",
+        "studyDescription": project_data["project_abstract"],
+        "studyName": project_data["project_name"],
         "studyType": "Phenotyping",
-        "trialName": "ClimMob_{}_Trial".format(crop_desc),
+        "trialDbId": current_data["trialDbId"],
+        "trialName": project_data["project_name"],
     }
-    for key, value in project_data["project"].items():
-        study_dict["additionalInfo"][key] = value
-    headers = {"Content-Type": "application/json", "accept": "application/json"}
+
+    print(json.dumps(studies, default=str))
+
+    # for key, value in project_data.items():
+    #     trial_dict["additionalInfo"][key] = value
+
+    auth_token = get_token(request, user)
+
+    headers = {
+        "Content-Type": "application/json",
+        "accept": "application/json",
+        "Authorization": "Bearer " + auth_token,
+    }
     if not current_data:
+        print("POST")
         response = requests.post(
-            "{}/studies".format(server_url),
-            data=json.dumps([study_dict]),
+            "{}/brapi/v2/studies".format(server_url),
+            data=json.dumps(studies, default=str),
             headers=headers,
         )
         if response.status_code == 200:
             data = json.loads(response.text)
-            current_data["studyDbId"] = data["result"]["data"][0]["studyDbId"]
+            new_studies = []
+            for a_study in data["result"]["data"]:
+                new_studies.append({"studyDbId": a_study["studyDbId"]})
+            current_data["studies"] = new_studies
         else:
-            print("*******************Study POST")
-            print(response.status_code)
-            print(response.text)
-            print("*******************Study POST")
+            report_error(response)
     else:
-        response = requests.put(
-            "{}/studies/{}".format(server_url, current_data["studyDbId"]),
-            data=json.dumps(study_dict),
-            headers=headers,
-        )
-        if response.status_code != 200:
-            print("*******************Study PUT")
-            print(study_dict)
-            print(response.status_code)
-            print(response.text)
-            print("*******************Study PUT")
+        print("PUT")
+        for a_study in studies:
+            response = requests.put(
+                "{}/brapi/v2/trials/{}".format(server_url, a_study["studyDbId"]),
+                data=json.dumps(a_study, default=str),
+                headers=headers,
+            )
+            if response.status_code != 200:
+                report_error(response)
 
 
 def send_trial_data(request, user, project_data, crop, server_url, current_data):
@@ -550,10 +570,7 @@ def send_trial_data(request, user, project_data, crop, server_url, current_data)
             data = json.loads(response.text)
             current_data["trialDbId"] = data["result"]["data"][0]["trialDbId"]
         else:
-            print("*******************Trial POST result")
-            print(response.status_code)
-            print(response.text)
-            print("*******************Trial POST result")
+            report_error(response)
     else:
         print("PUT")
         response = requests.put(
@@ -562,8 +579,4 @@ def send_trial_data(request, user, project_data, crop, server_url, current_data)
             headers=headers,
         )
         if response.status_code != 200:
-            print("*******************Trial PUT")
-            print(trial_dict)
-            print(response.status_code)
-            print(response.text)
-            print("*******************Trial PUT")
+            report_error(response)

@@ -5,7 +5,7 @@ from climmob.models import User
 from climmob.models.schema import mapToSchema, mapFromSchema
 
 
-def get_login_url(request):
+def get_login_url(request, issuer_url):
     client_id = request.registry.settings.get("brapi.client_id")
     client_secret = request.registry.settings.get("brapi.client_secret")
     redirect_uri = request.route_url("brapi_oi_callback")

@@ -47,38 +47,9 @@ def check_integration(request, project_id):
     return -1
 
 
-breed_base_servers = [
-    {
-        "code": "test",
-        "name": "Test server",
-        "url": "https://test-server.brapi.org",
-    },
-    {
-        "code": "cassavabase",
-        "name": "NextGen Cassava Project",
-        "url": "https://cassavabase.org",
-    },
-    {
-        "code": "yambase",
-        "name": "Africa Yam Project",
-        "url": "https://yambase.org",
-    },
-]
-
-
-def get_servers():
-    return breed_base_servers
-
-
-def get_server_url(server_code):
-    for a_server in breed_base_servers:
-        if a_server["code"] == server_code:
-            return a_server["url"]
-    return None
-
-
 def get_crops():
-    return [{"code": "maize", "name": "Maize"}, {"code": "beans", "name": "Beans"}]
+    return [{"code": "cassava", "name": "Cassava", "server": "https://cassavabase.org"},
+            {"code": "yam", "name": "Yam", "server": "https://yambase.org"}]
 
 
 def get_crop_desc(crop_code):
@@ -86,6 +57,14 @@ def get_crop_desc(crop_code):
     for a_crop in crops:
         if a_crop["code"] == crop_code:
             return a_crop["name"]
+    return ""
+
+
+def get_crop_server(crop_code):
+    crops = get_crops()
+    for a_crop in crops:
+        if a_crop["code"] == crop_code:
+            return a_crop["server"]
     return ""
 
 

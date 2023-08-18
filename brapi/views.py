@@ -1,5 +1,5 @@
 from climmob.views.classes import publicView, privateView
-from .brapi import send_study_data, send_trait_data, send_observations, send_trial_data
+from .brapi import send_trait_data, send_observations, send_trial_data
 from climmob.models import Project, mapFromSchema
 import json
 import os
@@ -10,6 +10,16 @@ import datetime as dt
 
 class BRAPIOILogin(privateView):
     def processView(self):
+        user = self.user.login
+        project_id = self.request.matchdict["project"]
+
+        project_data = (
+            self.request.dbsession.query(Project)
+            .filter(Project.project_id == project_id)
+            .first()
+        )
+        project_data = mapFromSchema(project_data)
+
         login_url = get_login_url(self.request)
         self.returnRawViewResult = True
         return HTTPFound(login_url)

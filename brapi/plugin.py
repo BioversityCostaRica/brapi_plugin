@@ -1,17 +1,13 @@
 import climmob.plugins as plugins
 import climmob.plugins.utilities as u
-from climmob.models import Project, mapFromSchema
 from .views import BRAPISynch, BRAPIOILogin, BRAPIOICallBack
 from .helpers import (
     check_integration,
-    get_servers,
     get_crops,
-    get_server_url,
     crop_exist,
     token_is_valid,
+    get_crop_server,
 )
-from .brapi import send_study_data
-import json
 
 
 class BrAPI(plugins.SingletonPlugin):
@@ -32,7 +28,7 @@ class BrAPI(plugins.SingletonPlugin):
             u.addRoute(
                 "brapi_synchronize", "/breedbase/synch/{project}", BRAPISynch, "json"
             ),
-            u.addRoute("brapi_oi_login", "/breedbase/login", BRAPIOILogin, None),
+            u.addRoute("brapi_oi_login", "/breedbase/{project}/login", BRAPIOILogin, None),
             u.addRoute(
                 "brapi_oi_callback",
                 "/breedbase/callback",
@@ -51,10 +47,7 @@ class BrAPI(plugins.SingletonPlugin):
         return [
             u.addFieldToProjectSchema("breedbase_link", "Link to a BreedBase"),
             u.addFieldToProjectSchema("breedbase_crop", "Main crop of the breedBase"),
-            u.addFieldToProjectSchema("breedbase_server", "BreedBase Server"),
             u.addFieldToProjectSchema("breedbase_url", "BreedBase Server URL"),
-            u.addFieldToProjectSchema("breedbase_license", "BreedBase License"),
-            u.addFieldToProjectSchema("breedbase_login", "BreedBase Login required"),
             u.addFieldToUserSchema(
                 "breedbase_token", "Last token used to authenticate"
             ),
@@ -66,7 +59,6 @@ class BrAPI(plugins.SingletonPlugin):
     def get_helpers(self):
         return {
             "check_integration": check_integration,
-            "get_servers": get_servers,
             "get_crops": get_crops,
             "token_is_valid": token_is_valid,
         }
@@ -75,29 +67,15 @@ class BrAPI(plugins.SingletonPlugin):
         _ = request.translate
         if "breedbase_link" in project_data.keys():
             project_data["breedbase_link"] = 1
-            if project_data.get("breedbase_license", None) is None:
-                return False, _("You need to specify a BreedBase license"), project_data
             if project_data.get("breedbase_crop", None) is None:
                 return False, _("You need to specify a BreedBase crop"), project_data
-            if project_data.get("breedbase_server", None) is None:
-                return False, _("You need to specify a BreedBase server"), project_data
-            server_url = get_server_url(project_data["breedbase_server"])
-            if server_url is None:
-                return False, _("BreedBase server not found"), project_data
             if not crop_exist(project_data["breedbase_crop"]):
                 return False, _("BreedBase Crop not found"), project_data
-            project_data["breedbase_url"] = server_url
-            if "breedbase_login" in project_data.keys():
-                project_data["breedbase_login"] = 1
-            else:
-                project_data["breedbase_login"] = 0
+            project_data["breedbase_url"] = get_crop_server(project_data["breedbase_crop"])
         else:
             project_data["breedbase_link"] = 0
             project_data["breedbase_crop"] = ""
-            project_data["breedbase_server"] = ""
             project_data["breedbase_url"] = ""
-            project_data["breedbase_license"] = ""
-            project_data["breedbase_login"] = 0
         return True, ""
 
     def after_adding_project(self, request, user, project_data):
@@ -108,29 +86,15 @@ class BrAPI(plugins.SingletonPlugin):
         _ = request.translate
         if "breedbase_link" in project_data.keys():
             project_data["breedbase_link"] = 1
-            if project_data.get("breedbase_license", "") == "":
-                return False, _("You need to specify a License"), project_data
             if project_data.get("breedbase_crop", None) is None:
                 return False, _("You need to specify a BreedBase crop"), project_data
-            if project_data.get("breedbase_server", None) is None:
-                return False, _("You need to specify a BreedBase server"), project_data
-            server_url = get_server_url(project_data["breedbase_server"])
-            if server_url is None:
-                return False, _("BreedBase server not found"), project_data
             if not crop_exist(project_data["breedbase_crop"]):
                 return False, _("BreedBase Crop not found"), project_data
-            project_data["breedbase_url"] = server_url
-            if "breedbase_login" in project_data.keys():
-                project_data["breedbase_login"] = 1
-            else:
-                project_data["breedbase_login"] = 0
+            project_data["breedbase_url"] = get_crop_server(project_data["breedbase_crop"])
         else:
             project_data["breedbase_link"] = 0
             project_data["breedbase_crop"] = ""
-            project_data["breedbase_server"] = ""
             project_data["breedbase_url"] = ""
-            project_data["breedbase_license"] = ""
-            project_data["breedbase_login"] = 0
         return (
             True,
             "",

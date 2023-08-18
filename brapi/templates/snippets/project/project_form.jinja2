@@ -17,7 +17,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="col-sm-4 control-label">{{ _("Main crop") }}</label>
+                    <label class="col-sm-4 control-label">{{ _("Crop") }}</label>
                     <div class="col-sm-8">
                         <select id="breedbase_crop" name="breedbase_crop" class="form-control chosen-select" tabindex="2">
                             <option value="">{{ _("Select one crop") }}</option>
@@ -27,36 +27,6 @@
                         </select>
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label class="col-sm-4 control-label">{{ _("BreedBase server") }}</label>
-                    <div class="col-sm-8">
-                        <select id="breedbase_server" name="breedbase_server" class="form-control chosen-select" tabindex="2">
-                            <option value="">{{ _("Select one server") }}</option>
-                            {% for server in request.h.get_servers() %}
-                                <option data-url="{{ server.url }}" value="{{ server.code }}" {% if server.code == dataworking.breedbase_server %}selected{% endif %} >{{ server.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-2 col-form-label">{{ _('Login required') }}</label>
-                    <div class="col-sm-10"><input type="checkbox" name="breedbase_login" class="js-switch" {% if dataworking.breedbase_login == 1 %}checked{% endif %} /><br/><span class="form-text m-b-none">{{ _('If you need to login to the BreedBase server to store data') }}</span></div>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-4 control-label">{{ _("BreedBase License") }}</label>
-                    <div class="col-sm-8">
-                        <select id="breedbase_license" name="breedbase_license" class="form-control chosen-select" tabindex="2">
-                            <option value="">{{ _("Select one license for your data") }}</option>
-                            <option value="CC-BY" {% if dataworking.breedbase_license == "CC-BY" %}selected{% endif %} >Attribution</option>
-                            <option value="CC-BY-SA" {% if dataworking.breedbase_license == "CC-BY-SA" %}selected{% endif %} >Attribution-ShareAlike</option>
-                            <option value="CC-BY-NC" {% if dataworking.breedbase_license == "CC-BY-NC" %}selected{% endif %} >Attribution-NonCommercial</option>
-                            <option value="CC-BY-NC-SA" {% if dataworking.breedbase_license == "CC-BY-NC-SA" %}selected{% endif %} >Attribution-NonCommercial-ShareAlike</option>
-                            <option value="OTHER-PUBLIC" {% if dataworking.breedbase_license == "Other" %}selected{% endif %} >Other public domain license</option>
-                        </select>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
